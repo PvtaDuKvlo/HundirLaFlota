@@ -54,7 +54,35 @@ def PasarNumeros(matriz):
     return matriz
 
 #Creamos la funcion para el final de la partida
-
+def FinDeJuego(ganador):
+    print("Fin de la partida")
+    time.sleep(1)
+    if ganador == "Jugador": 
+        print("¡¡¡Has ganado!!!")
+        time.sleep(1)
+    else:
+        print("Has perdido")
+        time.sleep(1)
+    print("¿Quieres volver a jugar?")
+    time.sleep(1)
+    print("1. Si")
+    print("2. No")
+    eleccion = input("Elige una opción: ")
+    if eleccion == "1":
+        print("Volverás a la elección de dificultad")
+        time.sleep(1)
+        print("Elige la dificultad del juego:")
+        print("1. Fácil")
+        print("2. Intermedio")
+        print("3. Difícil")
+        time.sleep(1)
+    elif eleccion == "2":
+        print("Fin del juego")
+        time.sleep(1)
+    else:
+        print("Opción no válida, por favor elige una opción válida")
+    time.sleep(1)
+print()
 
 
 #Introducimos un ASCI para darle un toque personal
