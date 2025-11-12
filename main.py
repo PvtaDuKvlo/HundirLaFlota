@@ -1,12 +1,19 @@
-import 
+
+from funciones import *
+
+#menu()
+tableroA = crearMatriz(11,11,"-")
+Pasarletra(tableroA)
+PasarNumeros(tableroA)
+print("    ##TU TABLERO##  ")
+imprimirFilasMatriz(tableroA)
+##TABLERO DISPAROS
+tableroB = crearMatriz(11,11,"-")
+Pasarletra(tableroB)
+PasarNumeros(tableroB)
+print()
+print("##TABLERO DE DISPAROS##")
+imprimirFilasMatriz(tableroB)
 
 
-print("""
-  ___ ___                   .___.__         .__             _____.__          __          
- /   |   \ __ __  ____    __| _/|__|______  |  | _____    _/ ____\  |   _____/  |______   
-/    ~    \  |  \/    \  / __ | |  \_  __ \ |  | \__  \   \   __\|  |  /  _ \   __\__  \  
-\    Y    /  |  /   |  \/ /_/ | |  ||  | \/ |  |__/ __ \_  |  |  |  |_(  <_> )  |  / __ \_
- \___|_  /|____/|___|  /\____ | |__||__|    |____(____  /  |__|  |____/\____/|__| (____  /
-       \/            \/      \/                       \/                               \/ 
 
-""")
