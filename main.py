@@ -64,6 +64,12 @@ def main():
     print("¡Los tableros están listos para jugar!")
 
 
+    ##TU TURNO
+
+    ##TURNO  DEL ORDENADOR
+    disparoAleatorio()
+
+
 
     # Comprueba si quedan barcos en los dos tableros y declara el ganador
     if not quedanBarcos(tableroRival):

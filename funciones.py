@@ -1,6 +1,6 @@
 import random
 import time
-
+from main import *
 # Crear una matriz del tamaño indicado con un valor por defecto
 def crearMatriz(filas, columnas, valor):
     return [[valor for _ in range(columnas)] for _ in range(filas)]
@@ -109,11 +109,15 @@ def ocultarBarcos(tablero):
     return oculto
 
 def disparoAleatorio():
-    fila = random.randint(0,9)
-    columna = random.randint(0,9)
+    filaC = random.randint(0,9)
+    columnaC = random.randint(0,9)
 
-    
-    return  fila, columna 
+    if tableroJugador[filaC][columnaC] in ["L","B","Z","P"]:
+        prin("La CPU ha acertado, ¡TOCADO!")
+        tableroJugador[filaC][columnaC] = "X"
+    else:
+        print("El ordenador ha fallado, AGUA")
+
 
 
 #Funcion de fin del juego, con opcion de volver a jugar y opcion de no jugar mas
