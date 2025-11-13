@@ -1,91 +1,144 @@
+import random
+import time
 
+# Crear una matriz del tamaño indicado con un valor por defecto
+def crearMatriz(filas, columnas, valor):
+    return [[valor for _ in range(columnas)] for _ in range(filas)]
 
-import time #Libreria para las pausas - time.sleep(0)
-
-#Procedemos a crear la matriz para el tablero
-def crearMatriz(filas,columnas,valor):
-    matriz = []
-    for i in range(filas):
-        matriz.append([])
-        for j in range(columnas):
-            matriz[i].append(valor)
-    return matriz 
-
-#Aqui creamos la funcion para imprimir las filas de la matriz
+# Imprimir la matriz de forma legible
 def imprimirFilasMatriz(matriz):
-    print(" ")
+    print()
     for fila in matriz:
-        print(" ".join(str(elemento) for elemento in fila))
+        print(" ".join(str(x) for x in fila))
 
-#Procedemos el eje de las letras a la matriz
-def modificarMatriz(matriz,fila,columna,valor):
+# Modificar un valor específico en la matriz
+def modificarMatriz(matriz, fila, columna, valor):
     matriz[fila][columna] = valor
     return matriz
 
-#Creamos el borde de la tabla con las coordenadas en letras
+# Agregar letras al eje vertical (columna 0)
 def Pasarletra(matriz):
-    matriz = modificarMatriz(matriz,0,0," ")
-    matriz = modificarMatriz(matriz,1,0,"A")
-    matriz = modificarMatriz(matriz,2,0,"B")
-    matriz = modificarMatriz(matriz,3,0,"C")
-    matriz = modificarMatriz(matriz,4,0,"D")
-    matriz = modificarMatriz(matriz,5,0,"E")
-    matriz = modificarMatriz(matriz,6,0,"F")
-    matriz = modificarMatriz(matriz,7,0,"G")
-    matriz = modificarMatriz(matriz,8,0,"H")
-    matriz = modificarMatriz(matriz,9,0,"I")
-    matriz = modificarMatriz(matriz,10,0,"J")
-    return matriz   
-
-
-#Creamos el otro borde de la tabla con las coordenadas en numeros
-def PasarNumeros(matriz):
-    matriz = modificarMatriz(matriz,0,0," ")
-    matriz = modificarMatriz(matriz,0,1,"0")
-    matriz = modificarMatriz(matriz,0,2,"1")
-    matriz = modificarMatriz(matriz,0,3,"2")
-    matriz = modificarMatriz(matriz,0,4,"3")
-    matriz = modificarMatriz(matriz,0,5,"4")
-    matriz = modificarMatriz(matriz,0,6,"5")
-    matriz = modificarMatriz(matriz,0,7,"6")
-    matriz = modificarMatriz(matriz,0,8,"7")
-    matriz = modificarMatriz(matriz,0,9,"8")
-    matriz = modificarMatriz(matriz,0,10,"9")
+    letras = [" ", "A","B","C","D","E","F","G","H","I","J"]
+    for i, letra in enumerate(letras):
+        matriz[i][0] = letra
     return matriz
 
-#Creamos la funcion para el final de la partida
+# Agregar números al eje horizontal (fila 0)
+def PasarNumeros(matriz):
+    numeros = [" ", "0","1","2","3","4","5","6","7","8","9"]
+    for j, num in enumerate(numeros):
+        matriz[0][j] = num
+    return matriz
+
+# Función para generar los barcos según la dificultad
+def generarBarcos(tablero, dificultad):
+    if dificultad == 1:
+        barcos = [
+            ("Lancha", 1, "L"),
+            ("Lancha", 1, "L"),
+            ("Lancha", 1, "L"),
+            ("Lancha", 1, "L"),
+            ("Lancha", 1, "L"),
+            ("Buque", 3, "B"),
+            ("Buque", 3, "B"),
+            ("Buque", 3, "B"),
+            ("Acorazado", 4, "Z"),
+            ("Portaaviones", 5, "P")
+        ]
+    elif dificultad == 2:
+        barcos = [
+            ("Lancha", 1, "L"),
+            ("Lancha", 1, "L"),
+            ("Buque", 3, "B"),
+            ("Acorazado", 4, "Z"),
+            ("Portaaviones", 5, "P")
+        ]
+    elif dificultad == 3:
+        barcos = [
+            ("Lancha", 1, "L"),
+            ("Buque", 3, "B")
+        ]
+    else:
+        barcos = []
+
+    for nombre, longitud, simbolo in barcos:
+        colocado = False
+        intentos = 0
+        while not colocado and intentos < 100:
+            intentos += 1
+
+            # Orientación según el tipo de barco
+            if nombre == "Portaaviones":
+                orientacion = "vertical"
+            elif nombre in ["Buque", "Acorazado"]:
+                orientacion = "horizontal"
+            else:
+                orientacion = random.choice(["horizontal", "vertical"])
+
+            if orientacion == "horizontal":
+                fila = random.randint(1, 10)
+                columna = random.randint(1, 10 - longitud + 1)
+                if all(tablero[fila][columna + i] == "-" for i in range(longitud)):
+                    for i in range(longitud):
+                        tablero[fila][columna + i] = simbolo
+                    colocado = True
+
+            elif orientacion == "vertical":
+                fila = random.randint(1, 10 - longitud + 1)
+                columna = random.randint(1, 10)
+                if all(tablero[fila + i][columna] == "-" for i in range(longitud)):
+                    for i in range(longitud):
+                        tablero[fila + i][columna] = simbolo
+                    colocado = True
+
+    return tablero
+
+# Oculta los barcos del rival y no borra ninguna letra de las Coordenadas
+def ocultarBarcos(tablero):
+    oculto = []
+    for i, fila in enumerate(tablero):
+        nueva_fila = []
+        for j, celda in enumerate(fila):
+            if i == 0 or j == 0:
+                nueva_fila.append(celda)
+            elif celda in ["L", "B", "Z", "P"]:
+                nueva_fila.append("-")
+            else:
+                nueva_fila.append(celda)
+        oculto.append(nueva_fila)
+    return oculto
+
+def disparoAleatorio():
+    fila = random.randint(0,9)
+    columna = random.randint(0,9)
+
+    
+    return  fila, columna 
+
+
+#Funcion de fin del juego, con opcion de volver a jugar y opcion de no jugar mas
 def FinDeJuego(ganador):
     print("Fin de la partida")
     time.sleep(1)
     if ganador == "Jugador": 
         print("¡¡¡Has ganado!!!")
-        time.sleep(1)
     else:
         print("Has perdido")
-        time.sleep(1)
-    print("¿Quieres volver a jugar?")
     time.sleep(1)
+    print("¿Quieres volver a jugar?")
     print("1. Si")
     print("2. No")
     eleccion = input("Elige una opción: ")
     if eleccion == "1":
-        print("Volverás a la elección de dificultad")
-        time.sleep(1)
-        print("Elige la dificultad del juego:")
-        print("1. Fácil")
-        print("2. Intermedio")
-        print("3. Difícil")
-        time.sleep(1)
+        print("Volverás a la elección de dificultad...")
+        return main()
     elif eleccion == "2":
         print("Fin del juego")
-        time.sleep(1)
+        exit()
     else:
-        print("Opción no válida, por favor elige una opción válida")
-    time.sleep(1)
-print()
-
-
-#Introducimos un ASCI para darle un toque personal
+        print("Opción no válida. Fin del juego.")
+        exit()
+    
 def menu():
     print("""
   ___ ___                   .___.__         .__             _____.__          __          
@@ -94,71 +147,12 @@ def menu():
 \    Y    /  |  /   |  \/ /_/ | |  ||  | \/ |  |__/ __ \_  |  |  |  |_(  <_> )  |  / __ \_
  \___|_  /|____/|___|  /\____ | |__||__|    |____(____  /  |__|  |____/\____/|__| (____  /
        \/            \/      \/                       \/                               \/ 
-
 """)
 
 
-#Creamos la bienvenida al juego
-print("#################################")
-print("Bienvenido a Hundir la flota")
-print("#################################")
-
-#Selección de dificultad del juego
-print("Elige la dificultad del juego:")
-print("1. Fácil")
-print("2. Intermedio")
-print("3. Difícil")
-
-
-#Creamos un bucle para que el usuario elija la dificultad
-while True:
-    try:
-        dificultad = int(input("Elige una opción: "))
-        #time.sleep(1)
-        if dificultad == 1:
-            print("Has elegido la dificultad Fácil")
-            break
-        elif dificultad == 2:
-            print("Has elegido la dificultad Intermedio")
-            break
-        elif dificultad == 3:
-            print("Has elegido la dificultad Difícil")
-            break
-        else:
-            print("Opción no válida, por favor elige una opción válida")
-    except ValueError:
-        print("Opción no válida, por favor elige una opción válida")
-#time.sleep(1)
-print()
-
-
-#Mostramos la cantidad de barcos según la dificultad
-if dificultad == 1:
-    print("En la dificultad Fácil hay 10 barcos: 5 lanchas, 3 buques, 1 acorazado y 1 portaaviones")
-    print()
-elif dificultad == 2:
-    print("En la dificultad Intermedio hay 5 barcos: 2 lanchas, 1 buques, 1 acorazado y 1 portaaviones")
-    print()
-elif dificultad == 3:
-    print("En la dificultad Difícil hay 2 barcos: 1 lancha y 1 buque")
-    print()
-#time.sleep(1)
-print()
-
-
-#Mostramos la longitud de los barcos
-print("La longitud de la lancha es de 1 casilla")
-print("La longitud del buque es de 3 casillas")
-print("La longitud del portaaviones es de 5 casillas")
-print("La longitud del acorazado es de 4 casillas")
-print()
-#time.sleep(1)
-
-#Mostramos las posibles posiciones
-print("La A es de Agua")
-print("El - es de posición no disparada")
-print("La X es de posición tocada")
-#time.sleep(1)
-print()
-
-
+def quedanBarcos(tablero):
+    for fila in range(1, 11):
+        for columna in range(1, 11):
+            if tablero[fila][columna] in ["L", "B", "Z", "P"]:
+                return True
+    return False
