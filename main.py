@@ -1,83 +1,97 @@
 from funciones import *
+import sys
 
 def main():
-    menu()
-    print("#################################")
-    print("Bienvenido a Hundir la Flota")
-    print("#################################")
-    print()
+    while True: # Bucle para poder volver a jugar
+        menu()
+        print("#################################")
+        print("Bienvenido a Hundir la Flota")
+        print("#################################")
+        print()
 
-    # Elegir dificultad
-    print("Elige la dificultad del juego:")
-    print("1. Fácil")
-    print("2. Intermedio")
-    print("3. Difícil")
+        # Elegir dificultad
+        print("Elige la dificultad del juego:")
+        print("1. Fácil")
+        print("2. Intermedio")
+        print("3. Difícil")
 
-    while True:
-        try:
-            dificultad = int(input("Selecciona una opción: "))
-            if dificultad in [1, 2, 3]:
+        dificultad = 0
+        while True:
+            try:
+                dificultad = int(input("Selecciona una opción: "))
+                if dificultad in [1, 2, 3]:
+                    break
+                else:
+                    print("Opción no válida, intenta de nuevo.")
+            except ValueError:
+                print("Por favor, introduce un número válido.")
+
+        print()
+        print("Iniciando partida...")
+        time.sleep(1)
+
+        # --- CREAMOS TABLEROS ---
+        tableroJugador = crearMatriz(11, 11, "-")
+        tableroJugador = Pasarletra(tableroJugador)
+        tableroJugador = PasarNumeros(tableroJugador)
+        tableroJugador = generarBarcos(tableroJugador, dificultad)
+
+        tableroRival = crearMatriz(11, 11, "-")
+        tableroRival = Pasarletra(tableroRival)
+        tableroRival = PasarNumeros(tableroRival)
+        tableroRival = generarBarcos(tableroRival, dificultad)
+
+        juego_activo = True
+
+        # --- BUCLE DEL JUEGO ---
+        while juego_activo:
+            # 1. Mostrar Tableros
+            print("\n" + "="*30)
+            print("=== TABLERO DEL RIVAL ===")
+            imprimirFilasMatriz(ocultarBarcos(tableroRival))
+            
+            print("\n=== TU TABLERO ===")
+            imprimirFilasMatriz(tableroJugador)
+            print("="*30)
+
+            # 2. Turno Jugador
+            disparoJugador(tableroRival)
+            
+            # Comprobar victoria Jugador
+            if not quedanBarcos(tableroRival):
+                imprimirFilasMatriz(tableroRival) # Ver el resultado final
+                FinDeJuego("Jugador")
+                juego_activo = False
                 break
-            else:
-                print("Opción no válida, intenta de nuevo.")
-        except ValueError:
-            print("Por favor, introduce un número válido (1, 2 o 3).")
 
-    print()
+            time.sleep(1)
+            print("\n--------------------------------")
+            print("Turno del Ordenador...")
+            time.sleep(1)
 
-    # Mostrar información sobre los barcos
-    if dificultad == 1:
-        print("Dificultad Fácil: 10 barcos → 5 Lanchas, 3 Buques, 1 Acorazado, 1 Portaaviones")
-    elif dificultad == 2:
-        print("Dificultad Intermedia: 5 barcos → 2 Lanchas, 1 Buque, 1 Acorazado, 1 Portaaviones")
-    elif dificultad == 3:
-        print("Dificultad Difícil: 2 barcos → 1 Lancha, 1 Buque")
+            # 3. Turno Ordenador
+            disparoAleatorio(tableroJugador)
 
-    print()
-    print("Leyenda de barcos:")
-    print("L = Lancha (1 casilla)")
-    print("B = Buque (3 casillas horizontales)")
-    print("Z = Acorazado (4 casillas horizontales)")
-    print("P = Portaaviones (5 casillas verticales)")
-    print()
-
-    # --- TABLERO DEL JUGADOR ---
-    tableroJugador = crearMatriz(11, 11, "-")
-    tableroJugador = Pasarletra(tableroJugador)
-    tableroJugador = PasarNumeros(tableroJugador)
-    tableroJugador = generarBarcos(tableroJugador, dificultad)
-
-    # --- TABLERO DEL RIVAL ---
-    tableroRival = crearMatriz(11, 11, "-")
-    tableroRival = Pasarletra(tableroRival)
-    tableroRival = PasarNumeros(tableroRival)
-    tableroRival = generarBarcos(tableroRival, dificultad)
-
-    # Mostrar tableros
-    print("=== TABLERO DEL JUGADOR ===")
-    imprimirFilasMatriz(tableroJugador)
-
-    print("\n=== TABLERO DEL RIVAL  ===")
-    imprimirFilasMatriz(ocultarBarcos(tableroRival))
-
-    print()
-    print("¡Los tableros están listos para jugar!")
-
-
-    ##TU TURNO
-
-    ##TURNO  DEL ORDENADOR
-    disparoAleatorio()
-
-
-
-    # Comprueba si quedan barcos en los dos tableros y declara el ganador
-    if not quedanBarcos(tableroRival):
-        FinDeJuego("Jugador")
-        print("Has ganado!")
-    elif not quedanBarcos(tableroJugador):
-        FinDeJuego("Ordenador")
-        print("Has perdido")
+            # Comprobar victoria Ordenador
+            if not quedanBarcos(tableroJugador):
+                imprimirFilasMatriz(tableroJugador)
+                FinDeJuego("Ordenador")
+                juego_activo = False
+                break
+        
+        # Preguntar si jugar de nuevo
+        print("\n¿Quieres volver a jugar?")
+        print("1. Si")
+        print("2. No")
+        while True:
+            try:
+                opcion = int(input("Elige: "))
+                if opcion != "1":
+                    print("Gracias por jugar. ¡Adiós!")
+                    sys.exit()
+            except ValueError:
+                print("Opción no válida")
+        
 
 if __name__ == "__main__":
     main()

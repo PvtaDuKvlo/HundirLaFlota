@@ -1,6 +1,7 @@
 import random
 import time
 from main import *
+
 # Crear una matriz del tamaño indicado con un valor por defecto
 def crearMatriz(filas, columnas, valor):
     return [[valor for _ in range(columnas)] for _ in range(filas)]
@@ -108,15 +109,76 @@ def ocultarBarcos(tablero):
         oculto.append(nueva_fila)
     return oculto
 
-def disparoAleatorio():
-    filaC = random.randint(0,9)
-    columnaC = random.randint(0,9)
+# --- FUNCIÓN DISPARO JUGADOR  ---
+def disparoJugador(tableroRival):
+    letras_validas = ["A","B","C","D","E","F","G","H","I","J"]
+    mapa_letras = {letra: i+1 for i, letra in enumerate(letras_validas)} # TRADUCIMOS LAS LETRAS A NUMEROS PARA EL ORDENADOR
 
-    if tableroJugador[filaC][columnaC] in ["L","B","Z","P"]:
-        prin("La CPU ha acertado, ¡TOCADO!")
-        tableroJugador[filaC][columnaC] = "X"
-    else:
-        print("El ordenador ha fallado, AGUA")
+    while True:
+        coordenada = input("\nTu turno. Introduce coordenada (ej. A3): ").upper().strip()
+        
+        # Validación básica de longitud
+        if len(coordenada) < 2:
+            print("Coordenada no válida. Debe ser Letra + Número.")
+            continue
+
+        letra = coordenada[0]
+        numero_str = coordenada[1:]
+
+        # Validar que la letra y el número sean correctos
+        if letra not in mapa_letras or not numero_str.isdigit():
+            print("Formato incorrecto. Usa letras A-J y números 0-9.")
+            continue
+        
+        fila = mapa_letras[letra]
+        columna = int(numero_str) + 1 # +1 porque tu array empieza en " " y luego "0"
+
+        # Validar rango de columna (1 a 10)
+        if columna < 1 or columna > 10:
+            print("Número fuera de rango (0-9).")
+            continue
+
+        # Verificar si ya se disparó ahí
+        celda_actual = tableroRival[fila][columna]
+        if celda_actual in ["X", "O", "A"]:
+            print("¡Ya has disparado ahí! Elige otra casilla.")
+            continue
+        
+        # Lógica de impacto
+        if celda_actual in ["L", "B", "Z", "P"]:
+            print(f"¡TOCADO! Has dado a un barco en {coordenada}.")
+            tableroRival[fila][columna] = "X" # Marcamos tocado
+            return tableroRival # Retornamos tablero actualizado
+        elif celda_actual == "-":
+            print(f"Agua en {coordenada}.")
+            tableroRival[fila][columna] = "A" # A de Agua (o usa O)
+            return tableroRival
+    
+
+# --- DISPARO DE LA CPU ---
+def disparoAleatorio(tablero):
+    while True:
+        # Random entre 1 y 10 porque 0 son las etiquetas
+        filaC = random.randint(1, 10)
+        columnaC = random.randint(1, 10)
+
+        celda = tablero[filaC][columnaC]
+
+        # Si la celda no ha sido disparada
+        if celda not in ["X", "O", "A"]:
+            letras = [" ", "A","B","C","D","E","F","G","H","I","J"]
+            coord_nombre = f"{letras[filaC]}{columnaC-1}"
+
+            print(f"La CPU dispara a: {coord_nombre}")
+            time.sleep(1)
+
+            if celda in ["L","B","Z","P"]:
+                print("¡La CPU ha acertado! ¡TOCADO!")
+                tablero[filaC][columnaC] = "X"
+            else:
+                print("La CPU ha fallado. AGUA.")
+                tablero[filaC][columnaC] = "A"
+            break # Salir del bucle cuando dispara correctamente
 
 
 
@@ -153,6 +215,7 @@ def menu():
        \/            \/      \/                       \/                               \/ 
 """)
 
+#Funcion de quedanBarcos, con esta funcion indicamos si aun quedan barcos en el tablero del para saber si ganamos o perdimos
 
 def quedanBarcos(tablero):
     for fila in range(1, 11):
@@ -160,3 +223,19 @@ def quedanBarcos(tablero):
             if tablero[fila][columna] in ["L", "B", "Z", "P"]:
                 return True
     return False
+
+#Funcion de tableroJugador, con esta creamos el tablero del jugador.
+
+def tableroJugador():
+    print("Tablero del jugador:")
+    for fila in tableroJugador:
+        print(" ".join(fila))
+    print()
+
+#Funcion de tableroRival, con esta creamos el tablero del rival.
+
+def tableroRival():
+    print("Tablero del rival:")
+    for fila in tableroRival:
+        print(" ".join(fila))
+    print()
